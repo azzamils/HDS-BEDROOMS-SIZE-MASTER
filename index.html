@@ -6,6 +6,8 @@
     <style>
         body { font-family: sans-serif; background: #6b77ad; color: #f8fafc; padding: 15px; }
         .card { max-width: 500px; margin: auto; background: #5a6594; border-radius: 12px; padding: 25px; border: 2px solid #e0b0d5; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); }
+        .logo-box { text-align: center; margin-bottom: 15px; }
+        .logo-box img { max-width: 120px; height: auto; border-radius: 50%; border: 2px solid #e0b0d5; }
         h1 { color: #e0b0d5; text-align: center; margin-top: 0; font-size: 1.5rem; letter-spacing: 2px; }
         .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         label { display: block; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 5px; text-transform: uppercase; font-weight: bold; }
@@ -15,7 +17,7 @@
         .clear-btn { flex: 1; background: #4a5481; color: #e0b0d5; border: 1px solid #e0b0d5; }
         .result-area { background: #4a5481; padding: 20px; border-radius: 8px; margin-top: 25px; border-left: 6px solid #e0b0d5; display: none; }
         .section-head { color: #e0b0d5; font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid #5a6594; padding-bottom: 5px; }
-        .spec-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #5a6594; }
+        .spec-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #5a6594; }
         .label-text { color: #cbd5e1; }
         .val { font-weight: bold; color: #fff; font-size: 1.2rem; font-family: monospace; }
     </style>
@@ -23,6 +25,10 @@
 <body>
 
 <div class="card">
+    <div class="logo-box">
+        <img src="logo.png" alt="HDS Logo" onerror="this.style.display='none'">
+    </div>
+    
     <h1>HDS BEDROOMS</h1>
     
     <div class="input-group">
