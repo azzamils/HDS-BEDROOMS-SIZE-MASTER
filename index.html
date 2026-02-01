@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HDS Bedrooms Master</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: sans-serif; background: #6b77ad; color: #f8fafc; padding: 15px; }
+        .card { max-width: 500px; margin: auto; background: #5a6594; border-radius: 12px; padding: 25px; border: 2px solid #e0b0d5; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); }
+        h1 { color: #e0b0d5; text-align: center; margin-top: 0; font-size: 1.5rem; letter-spacing: 2px; }
+        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        label { display: block; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 5px; text-transform: uppercase; font-weight: bold; }
+        input, select { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #e0b0d5; background: #4a5481; color: white; box-sizing: border-box; font-size: 1rem; }
+        .btn-stack { display: flex; gap: 10px; margin-top: 10px; }
+        button { flex: 3; padding: 16px; background: #e0b0d5; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: #4a5481; font-size: 1.1rem; }
+        .clear-btn { flex: 1; background: #4a5481; color: #e0b0d5; border: 1px solid #e0b0d5; }
+        .result-area { background: #4a5481; padding: 20px; border-radius: 8px; margin-top: 25px; border-left: 6px solid #e0b0d5; display: none; }
+        .section-head { color: #e0b0d5; font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid #5a6594; padding-bottom: 5px; }
+        .spec-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #5a6594; }
+        .label-text { color: #cbd5e1; }
+        .val { font-weight: bold; color: #fff; font-size: 1.2rem; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>HDS BEDROOMS</h1>
+    
+    <div class="input-group">
+        <div>
+            <label>System Width (W)</label>
+            <input type="number" id="sysW" placeholder="mm">
+        </div>
+        <div>
+            <label>System Height (H)</label>
+            <input type="number" id="sysH" placeholder="mm">
+        </div>
+    </div>
+
+    <label>Number of Doors</label>
+    <select id="qty">
+        <option value="2">2 Doors</option>
+        <option value="3">3 Doors</option>
+        <option value="4" selected>4 Doors</option>
+    </select>
+    
+    <div class="btn-stack">
+        <button onclick="calculate()">CALCULATE</button>
+        <button class="clear-btn" onclick="resetForm()">CLR</button>
+    </div>
+
+    <div id="res" class="result-area">
+        <div class="spec-line" style="margin-bottom: 15px;">
+            <span class="label-text">FDS Size:</span> <span class="val" id="fdsOut" style="color:#e0b0d5"></span>
+        </div>
+
+        <div class="section-head">Metal</div>
+        <div class="spec-line"><span class="label-text">W x H:</span> <span class="val" id="metOut"></span></div>
+
+        <div class="section-head" style="margin-top: 15px;">Infill</div>
+        <div class="spec-line"><span class="label-text">Glass:</span> <span class="val" id="glOut"></span></div>
+        <div class="spec-line"><span class="label-text">Panel:</span> <span class="val" id="paOut"></span></div>
+    </div>
+</div>
+
+<script>
+function calculate() {
+    let w = parseFloat(document.getElementById('sysW').value);
+    let h = parseFloat(document.getElementById('sysH').value);
+    let q = parseInt(document.getElementById('qty').value);
+    
+    if(w && h) {
+        let overlaps = q - 1;
+        let fdsW = Math.floor((w + (overlaps * 30)) / q);
+        let fdsH = h - 45;
+        let metW = fdsW - 58;
+
+        document.getElementById('fdsOut').innerText = fdsW + " x " + fdsH + "mm";
+        document.getElementById('metOut').innerText = metW + "(W) x " + fdsH + "(H)mm";
+        document.getElementById('glOut').innerText = (fdsW - 23) + " x " + (fdsH - 52) + "mm";
+        document.getElementById('paOut').innerText = (fdsW - 30) + " x " + (fdsH - 62) + "mm";
+        
+        document.getElementById('res').style.display = 'block';
+    }
+}
+
+function resetForm() {
+    document.getElementById('sysW').value = '';
+    document.getElementById('sysH').value = '';
+    document.getElementById('res').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
