@@ -1,156 +1,194 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>HDS Bedrooms Master</title>
+    <title>HDS BMT Master v6</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body { font-family: sans-serif; background: #6b77ad; color: #f8fafc; padding: 10px; margin: 0; }
-        .card { max-width: 500px; margin: 5px auto; background: #5a6594; border-radius: 12px; padding: 20px; border: 2px solid #e0b0d5; box-shadow: 0 10px 15px rgba(0,0,0,0.3); }
-        .logo-box { text-align: center; margin-bottom: 10px; }
-        .logo-box img { max-width: 80px; height: auto; border-radius: 50%; border: 2px solid #e0b0d5; }
-        h1 { color: #e0b0d5; text-align: center; margin: 0 0 15px 0; font-size: 1.2rem; letter-spacing: 2px; }
-        
-        .mode-selector { background: #4a5481; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed #e0b0d5; }
-        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .card { max-width: 500px; margin: 5px auto; background: #5a6594; border-radius: 12px; padding: 20px; border: 2px solid #e0b0d5; }
         label { display: block; font-size: 0.7rem; color: #cbd5e1; margin-bottom: 4px; text-transform: uppercase; font-weight: bold; }
-        input, select { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #e0b0d5; background: #4a5481; color: white; font-size: 1rem; box-sizing: border-box; }
-        
-        .calc-btn { width: 100%; padding: 18px; background: #e0b0d5; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: #4a5481; font-size: 1.2rem; margin-top: 15px; display: block; }
-        .clear-btn { width: 100%; background: #4a5481; color: #e0b0d5; border: 1px solid #e0b0d5; margin-top: 10px; padding: 10px; font-size: 0.9rem; border-radius: 6px; cursor: pointer; }
-
+        input, select { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #e0b0d5; background: #4a5481; color: white; font-size: 1rem; box-sizing: border-box; margin-bottom: 12px; }
+        .mode-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 15px; }
+        .mode-btn { padding: 10px; border: 1px solid #e0b0d5; background: #4a5481; color: white; cursor: pointer; border-radius: 6px; font-size: 0.8rem; }
+        .active-mode { background: #e0b0d5; color: #4a5481; font-weight: bold; }
+        .door-preview { width: 100px; height: 160px; border: 4px solid #e0b0d5; margin: 10px auto 20px auto; display: flex; flex-direction: column; background: #333; cursor: pointer; }
+        .preview-panel { flex: 1; border-bottom: 2px solid #e0b0d5; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; }
+        .preview-panel:last-child { border-bottom: none; }
+        .p-glass { background: #a5f3fc; color: #083344; } 
+        .p-wood { background: #78350f; color: #fef3c7; } 
+        .calc-btn { width: 100%; padding: 18px; background: #e0b0d5; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: #4a5481; font-size: 1.2rem; }
         .result-area { background: #4a5481; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 6px solid #e0b0d5; display: none; }
-        .section-head { color: #e0b0d5; font-size: 0.85rem; font-weight: bold; margin: 15px 0 5px 0; text-transform: uppercase; border-bottom: 1px solid #5a6594; }
-        .spec-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #5a6594; }
-        .val { font-weight: bold; color: #fff; font-size: 1.2rem; font-family: monospace; }
-        .hidden { display: none; }
+        .spec-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #5a6594; }
+        .val { font-weight: bold; color: #fff; font-size: 1.1rem; font-family: monospace; }
+        .highlight { color: #e0b0d5; font-size: 1.3rem; }
+        .print-btn { width: 100%; margin-top: 15px; padding: 10px; background: #fff; color: #333; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+
+        @media print {
+            body { background: white; color: black; }
+            .card, .mode-toggle, .door-preview, .calc-btn, input, select, label { display: none !important; }
+            .result-area { display: block !important; background: white !important; border: 2px solid black; color: black !important; padding: 20px; }
+            .val, .highlight { color: black !important; }
+        }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <div class="logo-box">
-        <img src="logo.png" alt="HDS Logo" onerror="this.style.display='none'">
-    </div>
-    <h1>HDS BEDROOMS</h1>
-    
-    <div class="mode-selector">
-        <label>Step 1: Choose Mode</label>
-        <select id="calcMode" onchange="toggleMode()">
-            <option value="system">Full Opening (Equal Doors)</option>
-            <option value="single">Single Door (Custom Size)</option>
-        </select>
+    <label>Job Name</label>
+    <input type="text" id="jobName" placeholder="Job Name">
+
+    <div class="mode-toggle">
+        <button id="btnSys" class="mode-btn active-mode" onclick="setMode('system')">Full System</button>
+        <button id="btnSingle" class="mode-btn" onclick="setMode('single')">Single Door</button>
     </div>
 
-    <div id="systemInputs">
-        <div class="input-group">
-            <div><label>Opening Width</label><input type="number" id="sysW" placeholder="mm"></div>
-            <div><label>Opening Height</label><input type="number" id="sysH" placeholder="mm"></div>
+    <div style="display:flex; gap:10px;">
+        <div style="flex:1;"><label id="lblW">Op Width</label><input type="number" id="valW"></div>
+        <div style="flex:1;"><label id="lblH">Op Height</label><input type="number" id="valH"></div>
+    </div>
+
+    <div style="display:flex; gap:10px;">
+        <div style="flex:1;"><label>Metal Range</label>
+            <select id="range" onchange="updateColours()">
+                <option value="harris">Harris (Lag)</option>
+                <option value="col_lag">Colquhoun (Lag)</option>
+                <option value="darroch">Darroch (A)</option>
+                <option value="col_a">Colquhoun (A)</option>
+            </select>
         </div>
-        <label>Number of Doors</label>
-        <select id="qty">
-            <option value="2">2 Doors</option>
-            <option value="3">3 Doors</option>
-            <option value="4" selected>4 Doors</option>
-        </select>
-    </div>
-
-    <div id="singleInputs" class="hidden">
-        <label>Custom Door Size (FDS)</label>
-        <div class="input-group">
-            <div><label>Width</label><input type="number" id="customW" placeholder="mm"></div>
-            <div><label>Height</label><input type="number" id="customH" placeholder="mm"></div>
+        <div style="flex:1;"><label>Colour</label>
+            <select id="colour"></select>
         </div>
     </div>
 
-    <div style="margin-top:15px;">
-        <div class="input-group">
-            <div>
-                <label>Metal Range</label>
-                <select id="range">
-                    <option value="harris">Harris</option>
-                    <option value="colquhoun">Colquhoun</option>
-                    <option value="darroch">Darroch</option>
-                </select>
-            </div>
-            <div>
-                <label>Design Split</label>
-                <select id="design">
-                    <option value="1">Full Panel</option>
-                    <option value="2">1/2 Split</option>
-                    <option value="3">1/3 Split</option>
-                </select>
-            </div>
+    <div style="display:flex; gap:10px;">
+        <div style="flex:1;" id="qtyBox"><label>Doors</label><select id="doorQty"><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>
+        <div style="flex:1;"><label>Split</label>
+            <select id="design" onchange="buildInteractivePreview()">
+                <option value="1">Full</option><option value="2">1/2 Split</option><option value="3">1/3 Split</option>
+            </select>
         </div>
     </div>
-    
-    <button class="calc-btn" onclick="calculate()">GET CUT LIST</button>
-    <button class="clear-btn" onclick="resetForm()">RESET FORM</button>
+
+    <label style="text-align:center; margin-top:10px;">Tap Panels (Blue=G, Brown=W)</label>
+    <div class="door-preview" id="visual"></div>
+    <button class="calc-btn" onclick="calculate()">CREATE CUT LIST</button>
 
     <div id="res" class="result-area">
-        <div class="spec-line"><span>FDS Size:</span> <span class="val" id="fdsOut" style="color:#e0b0d5"></span></div>
-        <div class="section-head">Metal</div>
-        <div class="spec-line"><span>W x H:</span> <span class="val" id="metOut"></span></div>
-        <div id="infillResults"></div>
+        <h2 id="outJobName" style="margin:0; font-size: 1.2rem; color: #e0b0d5; text-align: center; border-bottom: 2px solid #e0b0d5; padding-bottom: 10px;"></h2>
+        <div class="spec-line"><span>RANGE / COLOUR:</span> <span class="val" id="resMeta"></span></div>
+        <div class="spec-line"><span>DOOR FDS (W):</span> <span class="val highlight" id="resFDSW"></span></div>
+        <div class="spec-line"><span>STILES (H):</span> <span class="val" id="resStile"></span></div>
+        <div class="spec-line"><span>RAIL/MIDBAR (W):</span> <span class="val highlight" id="resRail"></span></div>
+        <div id="cutResults"></div>
+        <button class="print-btn" onclick="window.print()">🖨️ PRINT FOR WORKSHOP</button>
     </div>
 </div>
 
 <script>
-function toggleMode() {
-    const mode = document.getElementById('calcMode').value;
-    document.getElementById('systemInputs').classList.toggle('hidden', mode === 'single');
-    document.getElementById('singleInputs').classList.toggle('hidden', mode === 'system');
+let currentMode = 'system';
+let panelData = [0]; 
+
+const metalColours = {
+    harris: ["White", "Silver", "Champagne", "Black"],
+    col_lag: ["White", "Silver", "Champagne", "Black"],
+    darroch: ["N/A"],
+    col_a: ["N/A"]
+};
+
+function updateColours() {
+    const range = document.getElementById('range').value;
+    const colSelect = document.getElementById('colour');
+    colSelect.innerHTML = '';
+    metalColours[range].forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c; opt.innerText = c;
+        colSelect.appendChild(opt);
+    });
+}
+
+function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('btnSys').classList.toggle('active-mode', mode === 'system');
+    document.getElementById('btnSingle').classList.toggle('active-mode', mode === 'single');
+    document.getElementById('lblW').innerText = mode === 'system' ? 'Op Width' : 'FDS Width';
+    document.getElementById('lblH').innerText = mode === 'system' ? 'Op Height' : 'FDS Height';
+    document.getElementById('qtyBox').style.visibility = mode === 'system' ? 'visible' : 'hidden';
+}
+
+function buildInteractivePreview() {
+    const design = document.getElementById('design').value;
+    const visual = document.getElementById('visual');
+    visual.innerHTML = '';
+    panelData = new Array(parseInt(design)).fill(0);
+    for(let i=0; i<design; i++) {
+        const p = document.createElement('div');
+        p.className = 'preview-panel p-glass';
+        p.innerText = 'GLASS';
+        p.onclick = () => {
+            panelData[i] = panelData[i] === 0 ? 1 : 0;
+            p.className = 'preview-panel ' + (panelData[i] === 0 ? 'p-glass' : 'p-wood');
+            p.innerText = panelData[i] === 0 ? 'GLASS' : 'WOOD';
+        };
+        visual.appendChild(p);
+    }
 }
 
 function calculate() {
-    const mode = document.getElementById('calcMode').value;
-    let fdsW, fdsH;
-
-    if(mode === 'system') {
-        let w = parseFloat(document.getElementById('sysW').value);
-        let h = parseFloat(document.getElementById('sysH').value);
-        let q = parseInt(document.getElementById('qty').value);
-        if(!w || !h) { alert("Enter Opening Width and Height"); return; }
-        fdsW = Math.floor((w + ((q - 1) * 30)) / q);
-        fdsH = h - 45;
-    } else {
-        fdsW = parseFloat(document.getElementById('customW').value);
-        fdsH = parseFloat(document.getElementById('customH').value);
-        if(!fdsW || !fdsH) { alert("Enter FDS Width and Height"); return; }
-    }
-
-    let range = document.getElementById('range').value;
-    let design = parseInt(document.getElementById('design').value);
+    const range = document.getElementById('range').value;
+    const rules = {
+        harris: { overlap: 30, metalDeduct: 58, glassDeduct: 23, woodDeduct: 30 },
+        col_lag: { overlap: 35, metalDeduct: 50, glassDeduct: 20, woodDeduct: 20 },
+        darroch: { overlap: 27, metalDeduct: 52, glassDeduct: 13, woodDeduct: 13 },
+        col_a: { overlap: 35, metalDeduct: 46, glassDeduct: 14, woodDeduct: 14 }
+    };
     
-    // Metal Logic
-    let railDed = (range === 'colquhoun') ? 62 : (range === 'darroch' ? 60 : 58);
-    let metW = fdsW - railDed;
+    const activeRule = rules[range];
+    const valW = parseFloat(document.getElementById('valW').value);
+    const valH = parseFloat(document.getElementById('valH').value);
+    if(!valW || !valH) return;
+
+    let fW = currentMode === 'system' ? (valW + (activeRule.overlap * (parseInt(document.getElementById('doorQty').value) - 1))) / parseInt(document.getElementById('doorQty').value) : valW;
+    let fH = currentMode === 'system' ? valH - 45 : valH;
+
+    const topIsWood = panelData[0] === 1;
+    const bottomIsWood = panelData[panelData.length-1] === 1;
+    const topRail = topIsWood ? 20 : 15;
+    const bottomRail = bottomIsWood ? 41 : 35; 
     
-    document.getElementById('fdsOut').innerText = fdsW + " x " + fdsH + "mm";
-    document.getElementById('metOut').innerText = metW + "(W) x " + fdsH + "(H)mm";
-
-    // Infill Logic
-    let glassW = fdsW - 23;
-    let panelW = fdsW - 30;
-    let totalWorkingH = fdsH - 52 - ((design - 1) * 10);
-    let splitH = Math.floor(totalWorkingH / design);
-
-    let html = `<div class="section-head">Infill (${design} Panels)</div>`;
-    if(design === 1) {
-        html += `<div class="spec-line"><span>Glass:</span> <span class="val">${glassW} x ${fdsH - 52}mm</span></div>`;
-        html += `<div class="spec-line"><span>Panel:</span> <span class="val">${panelW} x ${fdsH - 62}mm</span></div>`;
-    } else {
-        html += `<div class="spec-line"><span>Glass (ea):</span> <span class="val">${glassW} x ${splitH}mm</span></div>`;
-        html += `<div class="spec-line"><span>Panel (ea):</span> <span class="val">${panelW} x ${splitH - 10}mm</span></div>`;
+    let midbarMetal = 0;
+    for (let i = 0; i < panelData.length - 1; i++) {
+        let current = panelData[i];
+        let next = panelData[i+1];
+        if (current !== next) midbarMetal += 6; 
+        else if (current === 1) midbarMetal += 11; 
+        else midbarMetal += 1; 
     }
+    
+    let totalFixedMetal = topRail + bottomRail + midbarMetal;
+    let basePanelH = Math.floor((fH - totalFixedMetal) / panelData.length);
 
-    document.getElementById('infillResults').innerHTML = html;
+    document.getElementById('outJobName').innerText = "JOB: " + document.getElementById('jobName').value.toUpperCase();
+    const rangeText = document.getElementById('range').options[document.getElementById('range').selectedIndex].text;
+    document.getElementById('resMeta').innerText = rangeText + " - " + document.getElementById('colour').value;
+    
+    document.getElementById('resFDSW').innerText = fW.toFixed(1) + "mm";
+    document.getElementById('resStile').innerText = fH.toFixed(1) + "mm";
+    document.getElementById('resRail').innerText = (fW - activeRule.metalDeduct).toFixed(1) + "mm";
+    
+    let resHtml = '';
+    panelData.forEach((type, i) => {
+        let pName = type === 0 ? "GLASS" : "WOOD";
+        let pW = type === 0 ? (fW - activeRule.glassDeduct) : (fW - activeRule.woodDeduct);
+        resHtml += `<div class="spec-line"><span>P${i+1} (${pName}):</span> <span class="val highlight">${pW.toFixed(1)} x ${basePanelH}mm</span></div>`;
+    });
+
+    document.getElementById('cutResults').innerHTML = resHtml;
     document.getElementById('res').style.display = 'block';
-    document.getElementById('res').scrollIntoView({ behavior: 'smooth' });
 }
 
-function resetForm() {
-    location.reload();
-}
+updateColours();
+buildInteractivePreview();
 </script>
 </body>
 </html>
