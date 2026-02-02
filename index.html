@@ -1,49 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>HDS BMT Master v6</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>HDS Master v6</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: sans-serif; background: #6b77ad; color: #f8fafc; padding: 10px; margin: 0; }
-        .card { max-width: 500px; margin: 5px auto; background: #5a6594; border-radius: 12px; padding: 20px; border: 2px solid #e0b0d5; }
-        label { display: block; font-size: 0.7rem; color: #cbd5e1; margin-bottom: 4px; text-transform: uppercase; font-weight: bold; }
-        input, select { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #e0b0d5; background: #4a5481; color: white; font-size: 1rem; box-sizing: border-box; margin-bottom: 12px; }
-        .mode-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 15px; }
-        .mode-btn { padding: 10px; border: 1px solid #e0b0d5; background: #4a5481; color: white; cursor: pointer; border-radius: 6px; font-size: 0.8rem; }
+        body { font-family: sans-serif; background: #6b77ad; color: #fff; padding: 10px; margin: 0; }
+        .card { max-width: 450px; margin: auto; background: #5a6594; border-radius: 12px; padding: 15px; border: 2px solid #e0b0d5; }
+        label { display: block; font-size: 0.7rem; color: #cbd5e1; margin-bottom: 4px; font-weight: bold; }
+        input, select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #e0b0d5; background: #4a5481; color: white; margin-bottom: 10px; box-sizing: border-box; }
+        .mode-toggle { display: flex; gap: 5px; margin-bottom: 10px; }
+        .mode-btn { flex: 1; padding: 10px; border: 1px solid #e0b0d5; background: #4a5481; color: white; cursor: pointer; border-radius: 6px; }
         .active-mode { background: #e0b0d5; color: #4a5481; font-weight: bold; }
-        .door-preview { width: 100px; height: 160px; border: 4px solid #e0b0d5; margin: 10px auto 20px auto; display: flex; flex-direction: column; background: #333; cursor: pointer; }
-        .preview-panel { flex: 1; border-bottom: 2px solid #e0b0d5; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; }
-        .preview-panel:last-child { border-bottom: none; }
+        .door-preview { width: 80px; height: 120px; border: 3px solid #e0b0d5; margin: 10px auto; display: flex; flex-direction: column; background: #333; }
+        .preview-panel { flex: 1; border-bottom: 1px solid #e0b0d5; display: flex; align-items: center; justify-content: center; font-size: 9px; cursor: pointer; }
         .p-glass { background: #a5f3fc; color: #083344; } 
         .p-wood { background: #78350f; color: #fef3c7; } 
-        .calc-btn { width: 100%; padding: 18px; background: #e0b0d5; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: #4a5481; font-size: 1.2rem; }
-        .result-area { background: #4a5481; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 6px solid #e0b0d5; display: none; }
-        .spec-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #5a6594; }
-        .val { font-weight: bold; color: #fff; font-size: 1.1rem; font-family: monospace; }
-        .highlight { color: #e0b0d5; font-size: 1.3rem; }
-        .print-btn { width: 100%; margin-top: 15px; padding: 10px; background: #fff; color: #333; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        @media print {
-            body { background: white !important; color: black !important; }
-            .card, .mode-toggle, .door-preview, .calc-btn, input, select, label { display: none !important; }
-            .result-area { display: block !important; background: white !important; border: 2px solid black !important; color: black !important; padding: 20px; }
-            .val, .highlight { color: black !important; }
-        }
+        .calc-btn { width: 100%; padding: 15px; background: #e0b0d5; border: none; border-radius: 6px; font-weight: bold; color: #4a5481; font-size: 1.1rem; }
+        .result-area { background: #4a5481; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 5px solid #e0b0d5; display: none; }
+        .spec-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #5a6594; font-size: 0.9rem; }
+        .val { font-weight: bold; font-family: monospace; }
+        .highlight { color: #e0b0d5; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 <div class="card">
-    <label>Job Name</label>
-    <input type="text" id="jobName" placeholder="Job Name">
+    <input type="text" id="jobName" placeholder="JOB NAME">
     <div class="mode-toggle">
-        <button id="btnSys" class="mode-btn active-mode" onclick="setMode('system')">Full System</button>
-        <button id="btnSingle" class="mode-btn" onclick="setMode('single')">Single Door</button>
+        <button id="btnSys" class="mode-btn active-mode" onclick="setMode('system')">SYSTEM</button>
+        <button id="btnSingle" class="mode-btn" onclick="setMode('single')">SINGLE</button>
     </div>
     <div style="display:flex; gap:10px;">
-        <div style="flex:1;"><label id="lblW">Op Width</label><input type="number" id="valW"></div>
-        <div style="flex:1;"><label id="lblH">Op Height</label><input type="number" id="valH"></div>
+        <div style="flex:1;"><label id="lblW">OP WIDTH</label><input type="number" id="valW" step="any"></div>
+        <div style="flex:1;"><label id="lblH">OP HEIGHT</label><input type="number" id="valH" step="any"></div>
     </div>
     <div style="display:flex; gap:10px;">
-        <div style="flex:1;"><label>Metal Range</label>
+        <div style="flex:1;"><label>METAL</label>
             <select id="range" onchange="updateColours()">
                 <option value="harris">Harris (Lag)</option>
                 <option value="col_lag">Colquhoun (Lag)</option>
@@ -51,21 +43,100 @@
                 <option value="col_a">Colquhoun (A)</option>
             </select>
         </div>
-        <div style="flex:1;"><label>Colour</label>
-            <select id="colour"></select>
-        </div>
+        <div style="flex:1;"><label>COLOUR</label><select id="colour"></select></div>
     </div>
     <div style="display:flex; gap:10px;">
-        <div style="flex:1;" id="qtyBox"><label>Doors</label><select id="doorQty"><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>
-        <div style="flex:1;"><label>Split</label>
-            <select id="design" onchange="buildInteractivePreview()">
-                <option value="1">Full</option><option value="2">1/2 Split</option><option value="3">1/3 Split</option>
+        <div style="flex:1;" id="qtyBox"><label>DOORS</label><select id="doorQty"><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>
+        <div style="flex:1;"><label>SPLIT</label>
+            <select id="design" onchange="buildPreview()">
+                <option value="1">Full</option><option value="2">1/2</option><option value="3">1/3</option>
             </select>
         </div>
     </div>
-    <label style="text-align:center; margin-top:10px;">Tap Panels (Blue=G, Brown=W)</label>
     <div class="door-preview" id="visual"></div>
     <button class="calc-btn" onclick="calculate()">CREATE CUT LIST</button>
     <div id="res" class="result-area">
-        <h2 id="outJobName" style="margin:0; font-size: 1.2rem; color: #e0b0d5; text-align: center; border-bottom: 2px solid #e0b0d5; padding-bottom: 10px;"></h2>
-        <div class="spec-line"><span>RANGE / COLOUR:</span> <span class="val"
+        <div class="spec-line"><span id="resMeta"></span></div>
+        <div class="spec-line"><span>DOOR FDS (W):</span> <span class="val highlight" id="resFDSW"></span></div>
+        <div class="spec-line"><span>STILES (H):</span> <span class="val" id="resStile"></span></div>
+        <div class="spec-line"><span>RAILS (W):</span> <span class="val highlight" id="resRail"></span></div>
+        <div id="cutResults"></div>
+    </div>
+</div>
+<script>
+let currentMode = 'system';
+let panelData = [0];
+const colours = { harris:["White","Silver","Champagne","Black"], col_lag:["White","Silver","Champagne","Black"], darroch:["N/A"], col_a:["N/A"] };
+
+function updateColours() {
+    const r = document.getElementById('range').value;
+    const s = document.getElementById('colour');
+    s.innerHTML = '';
+    colours[r].forEach(c => { let o = document.createElement('option'); o.value=c; o.text=c; s.appendChild(o); });
+}
+
+function setMode(m) {
+    currentMode = m;
+    document.getElementById('btnSys').className = m==='system' ? 'mode-btn active-mode' : 'mode-btn';
+    document.getElementById('btnSingle').className = m==='single' ? 'mode-btn active-mode' : 'mode-btn';
+    document.getElementById('lblW').innerText = m==='system' ? 'OP WIDTH' : 'FDS WIDTH';
+    document.getElementById('lblH').innerText = m==='system' ? 'OP HEIGHT' : 'FDS HEIGHT';
+    document.getElementById('qtyBox').style.visibility = m==='system' ? 'visible' : 'hidden';
+}
+
+function buildPreview() {
+    const d = parseInt(document.getElementById('design').value);
+    const v = document.getElementById('visual');
+    v.innerHTML = ''; panelData = new Array(d).fill(0);
+    for(let i=0; i<d; i++) {
+        let p = document.createElement('div');
+        p.className = 'preview-panel p-glass'; p.innerText = 'G';
+        p.onclick = () => { panelData[i] = panelData[i]===0 ? 1 : 0; p.className = 'preview-panel '+(panelData[i]===0?'p-glass':'p-wood'); p.innerText = panelData[i]===0?'G':'W'; };
+        v.appendChild(p);
+    }
+}
+
+function calculate() {
+    const r = document.getElementById('range').value;
+    const rules = {
+        harris: { o:30, m:58, g:23, w:30 },
+        col_lag: { o:35, m:50, g:20, w:20 },
+        darroch: { o:27, m:52, g:13, w:13 },
+        col_a: { o:35, m:46, g:14, w:14 }
+    };
+    const active = rules[r];
+    const w = parseFloat(document.getElementById('valW').value);
+    const h = parseFloat(document.getElementById('valH').value);
+    if(!w || !h) return;
+
+    let fW = currentMode==='system' ? (w + (active.o * (parseInt(document.getElementById('doorQty').value)-1))) / parseInt(document.getElementById('doorQty').value) : w;
+    let fH = currentMode==='system' ? h - 45 : h;
+    
+    let mid = 0;
+    for(let i=0; i<panelData.length-1; i++) {
+        if(panelData[i]!==panelData[i+1]) mid+=6;
+        else if(panelData[i]===1) mid+=11;
+        else mid+=1;
+    }
+    let hFixed = (panelData[0]===1?20:15) + (panelData[panelData.length-1]===1?41:35) + mid;
+    let pH = Math.floor((fH - hFixed) / panelData.length);
+
+    document.getElementById('resMeta').innerText = document.getElementById('range').options[document.getElementById('range').selectedIndex].text + " - " + document.getElementById('colour').value;
+    document.getElementById('resFDSW').innerText = fW.toFixed(1);
+    document.getElementById('resStile').innerText = fH.toFixed(1);
+    document.getElementById('resRail').innerText = (fW - active.m).toFixed(1);
+    
+    let resH = '';
+    panelData.forEach((t, i) => {
+        let pW = t===0 ? (fW-active.g) : (fW-active.w);
+        resH += `<div class="spec-line"><span>P${i+1} (${t===0?'G':'W'}):</span> <span class="val highlight">${pW.toFixed(1)} x ${pH}</span></div>`;
+    });
+    document.getElementById('cutResults').innerHTML = resH;
+    document.getElementById('res').style.display = 'block';
+}
+
+updateColours();
+buildPreview();
+</script>
+</body>
+</html>
