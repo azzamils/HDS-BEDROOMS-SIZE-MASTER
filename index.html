@@ -22,31 +22,26 @@
         .val { font-weight: bold; color: #fff; font-size: 1.1rem; font-family: monospace; }
         .highlight { color: #e0b0d5; font-size: 1.3rem; }
         .print-btn { width: 100%; margin-top: 15px; padding: 10px; background: #fff; color: #333; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
-
         @media print {
-            body { background: white; color: black; }
+            body { background: white !important; color: black !important; }
             .card, .mode-toggle, .door-preview, .calc-btn, input, select, label { display: none !important; }
-            .result-area { display: block !important; background: white !important; border: 2px solid black; color: black !important; padding: 20px; }
+            .result-area { display: block !important; background: white !important; border: 2px solid black !important; color: black !important; padding: 20px; }
             .val, .highlight { color: black !important; }
         }
     </style>
 </head>
 <body>
-
 <div class="card">
     <label>Job Name</label>
     <input type="text" id="jobName" placeholder="Job Name">
-
     <div class="mode-toggle">
         <button id="btnSys" class="mode-btn active-mode" onclick="setMode('system')">Full System</button>
         <button id="btnSingle" class="mode-btn" onclick="setMode('single')">Single Door</button>
     </div>
-
     <div style="display:flex; gap:10px;">
         <div style="flex:1;"><label id="lblW">Op Width</label><input type="number" id="valW"></div>
         <div style="flex:1;"><label id="lblH">Op Height</label><input type="number" id="valH"></div>
     </div>
-
     <div style="display:flex; gap:10px;">
         <div style="flex:1;"><label>Metal Range</label>
             <select id="range" onchange="updateColours()">
@@ -60,7 +55,6 @@
             <select id="colour"></select>
         </div>
     </div>
-
     <div style="display:flex; gap:10px;">
         <div style="flex:1;" id="qtyBox"><label>Doors</label><select id="doorQty"><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>
         <div style="flex:1;"><label>Split</label>
@@ -69,128 +63,9 @@
             </select>
         </div>
     </div>
-
     <label style="text-align:center; margin-top:10px;">Tap Panels (Blue=G, Brown=W)</label>
     <div class="door-preview" id="visual"></div>
     <button class="calc-btn" onclick="calculate()">CREATE CUT LIST</button>
-
     <div id="res" class="result-area">
         <h2 id="outJobName" style="margin:0; font-size: 1.2rem; color: #e0b0d5; text-align: center; border-bottom: 2px solid #e0b0d5; padding-bottom: 10px;"></h2>
-        <div class="spec-line"><span>RANGE / COLOUR:</span> <span class="val" id="resMeta"></span></div>
-        <div class="spec-line"><span>DOOR FDS (W):</span> <span class="val highlight" id="resFDSW"></span></div>
-        <div class="spec-line"><span>STILES (H):</span> <span class="val" id="resStile"></span></div>
-        <div class="spec-line"><span>RAIL/MIDBAR (W):</span> <span class="val highlight" id="resRail"></span></div>
-        <div id="cutResults"></div>
-        <button class="print-btn" onclick="window.print()">🖨️ PRINT FOR WORKSHOP</button>
-    </div>
-</div>
-
-<script>
-let currentMode = 'system';
-let panelData = [0]; 
-
-const metalColours = {
-    harris: ["White", "Silver", "Champagne", "Black"],
-    col_lag: ["White", "Silver", "Champagne", "Black"],
-    darroch: ["N/A"],
-    col_a: ["N/A"]
-};
-
-function updateColours() {
-    const range = document.getElementById('range').value;
-    const colSelect = document.getElementById('colour');
-    colSelect.innerHTML = '';
-    metalColours[range].forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c; opt.innerText = c;
-        colSelect.appendChild(opt);
-    });
-}
-
-function setMode(mode) {
-    currentMode = mode;
-    document.getElementById('btnSys').classList.toggle('active-mode', mode === 'system');
-    document.getElementById('btnSingle').classList.toggle('active-mode', mode === 'single');
-    document.getElementById('lblW').innerText = mode === 'system' ? 'Op Width' : 'FDS Width';
-    document.getElementById('lblH').innerText = mode === 'system' ? 'Op Height' : 'FDS Height';
-    document.getElementById('qtyBox').style.visibility = mode === 'system' ? 'visible' : 'hidden';
-}
-
-function buildInteractivePreview() {
-    const design = document.getElementById('design').value;
-    const visual = document.getElementById('visual');
-    visual.innerHTML = '';
-    panelData = new Array(parseInt(design)).fill(0);
-    for(let i=0; i<design; i++) {
-        const p = document.createElement('div');
-        p.className = 'preview-panel p-glass';
-        p.innerText = 'GLASS';
-        p.onclick = () => {
-            panelData[i] = panelData[i] === 0 ? 1 : 0;
-            p.className = 'preview-panel ' + (panelData[i] === 0 ? 'p-glass' : 'p-wood');
-            p.innerText = panelData[i] === 0 ? 'GLASS' : 'WOOD';
-        };
-        visual.appendChild(p);
-    }
-}
-
-function calculate() {
-    const range = document.getElementById('range').value;
-    const rules = {
-        harris: { overlap: 30, metalDeduct: 58, glassDeduct: 23, woodDeduct: 30 },
-        col_lag: { overlap: 35, metalDeduct: 50, glassDeduct: 20, woodDeduct: 20 },
-        darroch: { overlap: 27, metalDeduct: 52, glassDeduct: 13, woodDeduct: 13 },
-        col_a: { overlap: 35, metalDeduct: 46, glassDeduct: 14, woodDeduct: 14 }
-    };
-    
-    const activeRule = rules[range];
-    const valW = parseFloat(document.getElementById('valW').value);
-    const valH = parseFloat(document.getElementById('valH').value);
-    if(!valW || !valH) return;
-
-    let fW = currentMode === 'system' ? (valW + (activeRule.overlap * (parseInt(document.getElementById('doorQty').value) - 1))) / parseInt(document.getElementById('doorQty').value) : valW;
-    let fH = currentMode === 'system' ? valH - 45 : valH;
-
-    const topIsWood = panelData[0] === 1;
-    const bottomIsWood = panelData[panelData.length-1] === 1;
-    const topRail = topIsWood ? 20 : 15;
-    const bottomRail = bottomIsWood ? 41 : 35; 
-    
-    let midbarMetal = 0;
-    for (let i = 0; i < panelData.length - 1; i++) {
-        let current = panelData[i];
-        let next = panelData[i+1];
-        if (current !== next) midbarMetal += 6; 
-        else if (current === 1) midbarMetal += 11; 
-        else midbarMetal += 1; 
-    }
-    
-    let totalFixedMetal = topRail + bottomRail + midbarMetal;
-    let basePanelH = Math.floor((fH - totalFixedMetal) / panelData.length);
-
-    document.getElementById('outJobName').innerText = "JOB: " + document.getElementById('jobName').value.toUpperCase();
-    const rangeText = document.getElementById('range').options[document.getElementById('range').selectedIndex].text;
-    document.getElementById('resMeta').innerText = rangeText + " - " + document.getElementById('colour').value;
-    
-    document.getElementById('resFDSW').innerText = fW.toFixed(1) + "mm";
-    document.getElementById('resStile').innerText = fH.toFixed(1) + "mm";
-    document.getElementById('resRail').innerText = (fW - activeRule.metalDeduct).toFixed(1) + "mm";
-    
-    let resHtml = '';
-    panelData.forEach((type, i) => {
-        let pName = type === 0 ? "GLASS" : "WOOD";
-        let pW = type === 0 ? (fW - activeRule.glassDeduct) : (fW - activeRule.woodDeduct);
-        resHtml += `<div class="spec-line"><span>P${i+1} (${pName}):</span> <span class="val highlight">${pW.toFixed(1)} x ${basePanelH}mm</span></div>`;
-    });
-
-    document.getElementById('cutResults').innerHTML = resHtml;
-    document.getElementById('res').style.display = 'block';
-}
-
-updateColours();
-buildInteractivePreview();
-</script>
-</body>
-</html>
-
-
+        <div class="spec-line"><span>RANGE / COLOUR:</span> <span class="val"
